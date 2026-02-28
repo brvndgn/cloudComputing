@@ -23,9 +23,9 @@ git config --global user.email "MY_NAME@example.com"
 
 # Check if your config is visible
 cat .git/config
-````
+```
 
-### 4. Install Azure CLI
+### 3. Install Azure CLI
 https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install?tabs=azure-powershell#azure-cli
 
 ```bash
@@ -33,7 +33,7 @@ https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install?tab
 brew update && brew install azure-cli
 ```
 
-### 3. Install Bicep
+### 4. Install Bicep
 https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install?tabs=azure-powershell
 
 ```bash
