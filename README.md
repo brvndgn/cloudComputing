@@ -26,7 +26,7 @@ cat .git/config
 ````
 
 ### 4. Install Azure CLI
-- https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install?tabs=azure-powershell#azure-cli
+https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install?tabs=azure-powershell#azure-cli
 
 ```bash
 # For Mac User: Start Terminal and un this following command
@@ -34,7 +34,7 @@ brew update && brew install azure-cli
 ```
 
 ### 3. Install Bicep
-- https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install?tabs=azure-powershell
+https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install?tabs=azure-powershell
 
 ```bash
 # For Mac User: Start Terminal and run the following command
