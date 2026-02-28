@@ -8,7 +8,7 @@ With help of the templates and scripts inside this repo, the whole handson Asses
 
 ## Setup Instructions
 
-### 1. Download and install Visual Studio Code (VSCode)
+### 1. Download and install Visual Studio Code (VSCode) + Extensions
 
 - https://code.visualstudio.com/download
 - Install Powershell Extension inside VSCode
