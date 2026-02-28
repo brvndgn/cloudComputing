@@ -1,8 +1,8 @@
-# cloudComputing
+# Cloud Computing Course
 
 Infrastruktur as Code Cloud Computing Course at FHNW
 
-# Parking Payment Application
+# HandOn Assesment Setup as IaC (Cloud Computing)
 
 With help of the templates and scripts inside this repo, the whole handson Assesment of the Cloud Computing Course at FHNW can be deployed, stopped or deleted.
 
@@ -14,6 +14,16 @@ With help of the templates and scripts inside this repo, the whole handson Asses
 - Install Powershell Extension inside VSCode
 - Install Git Extension inside VSCode
 - Install Bicep Extension inside VSCode
+
+### 2. Configure Git
+```bash
+# Start Terminal and setup Username and Mail inside Git Config
+git config --global user.name "FIRST_NAME LAST_NAME"
+git config --global user.email "MY_NAME@example.com"
+
+# Check if your config is visible
+cat .git/config
+````
 
 ### 4. Install Azure CLI
 - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install?tabs=azure-powershell#azure-cli
