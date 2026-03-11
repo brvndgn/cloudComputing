@@ -48,7 +48,7 @@ To create all resources run:
 
 To delete all resources run:
 ```bash
-././deleteResources.ps1
+./deleteResources.ps1
 ```
 
 Login with you FHNW Account
