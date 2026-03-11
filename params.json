@@ -1,0 +1,7 @@
+{
+    "subscription": "My Subscription Name",
+    "rgName": "rg-demo-dev-we-001",
+    "location": "westeurope",
+    "storageName": "stdemodevwe001"
+}
+

@@ -1,6 +1,6 @@
 # Cloud Computing Course
 
-Infrastruktur as Code Cloud Computing Course at FHNW
+Cloud Computing Course at FHNW
 
 # HandOn Assesment Setup as IaC (Cloud Computing)
 
@@ -13,7 +13,6 @@ With help of the templates and scripts inside this repo, the whole handson Asses
 - https://code.visualstudio.com/download
 - Install Powershell Extension inside VSCode
 - Install Git Extension inside VSCode
-- Install Bicep Extension inside VSCode
 
 ### 2. Configure Git
 ```bash
@@ -33,12 +32,23 @@ https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install?tab
 brew update && brew install azure-cli
 ```
 
-### 4. Install Bicep
-https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install?tabs=azure-powershell
+### 4. How to run
 
+Download the *.json and *.params files
+
+Open a Termina or VSCode and navigate to the folder where the downloaded scripts are located
 ```bash
-# For Mac User: Start Terminal and run the following command
-sudo rm -rf /Library/Developer/CommandLineTools
-sudo xcode-select --install
-brew update && brew install bicep
+cd /Path/ToScripts/
 ```
+
+To create all resources run:
+```bash
+./createResources.ps1
+```
+
+To delete all resources run:
+```bash
+././deleteResources.ps1
+```
+
+Login with you FHNW Account
