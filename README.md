@@ -34,7 +34,7 @@ brew update && brew install azure-cli
 
 ### 4. How to run
 
-Download the *.json and *.params files
+Download the *.json and *.params files or clone it from git
 
 Open a Termina or VSCode and navigate to the folder where the downloaded scripts are located
 ```bash
