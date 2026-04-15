@@ -2,19 +2,8 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subscriptionName": {
-            "value": "Azure for Students"
-        },
-        "subscriptionId": {
-            "value": "31b4c445-3541-456c-a8ec-f7c00f279dcb"
-        },
-        "providers": {
-            "value": [
-                "Microsoft.Storage"
-            ]
-        },
         "rgName": {
-            "value": "RG-BDO-CLI"
+            "value": "rg-bdo-cli"
         },
         "storageName": {
             "value": "storbdoportal"
@@ -32,7 +21,7 @@
             "value": "TLS1_2"
         },
         "rgNamePoland": {
-            "value": "RG-BDO-Tose1"
+            "value": "rg-bdo-tose1"
         },
         "storageNamePoland": {
             "value": "storbdotose1"
@@ -51,6 +40,36 @@
         },
         "containerNamePoland": {
             "value": "staticcontent"
+        },
+        "functionAppName": {
+            "value": "fap-bdo-tose1"
+        },
+        "runtimeStack": {
+            "value": "dotnet-isolated"
+        },
+        "runtimeVersion": {
+            "value": "8.0"
+        },
+        "hostingPlanSku": {
+            "value": "Y1"
+        },
+        "cosmosDbAccountName": {
+            "value": "cos-bdo-tose1"
+        },
+        "cosmosDbWorkloadType": {
+            "value": "Learning"
+        },
+        "cosmosDbDatabaseName": {
+            "value": "ServerlessTodo"
+        },
+        "cosmosDbContainerName": {
+            "value": "TodoItems"
+        },
+        "cosmosDbPartitionKey": {
+            "value": "/ItemOwner"
+        },
+        "enablePartitionMerge": {
+            "value": true
         }
     }
 }

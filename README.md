@@ -1,15 +1,19 @@
-# Cloud Computing Course - IaC Setup
+# Cloud Computing Course - ToDo App IaC Setup
 
-Cloud Computing Course at FHNW - Infrastructure as Code (IaC) Assessment Setup
+Cloud Computing Course at FHNW - Infrastructure as Code (IaC) for Serverless ToDo Application
 
 ## What This Project Does
 
-This repository contains **Infrastructure as Code (IaC)** templates that automatically create and manage Azure cloud resources for the Cloud Computing course assessment. Instead of manually creating resources through the Azure portal, you can deploy everything with a single command.
+This repository contains **Infrastructure as Code (IaC)** templates that automatically create and manage Azure cloud resources for a complete **ToDo application** in the Cloud Computing course. The project provisions all necessary Azure PaaS services and provides step-by-step instructions for deploying and configuring a serverless ToDo web application.
+
+Instead of manually creating resources through the Azure portal, you can deploy the complete infrastructure with a single command, then follow the setup guide to complete the application deployment.
 
 ### What Gets Created:
-- **Resource Groups** in different Azure regions
-- **Storage Accounts** with security configurations
-- **Blob Containers** with public access settings
+- **Resource Groups** in different Azure regions (Switzerland North + Poland Central)
+- **Storage Accounts** with security configurations and blob anonymous access
+- **Blob Containers** with public access settings for hosting static web content
+- **Azure Function Apps** with Consumption hosting plans (.NET 8 isolated runtime)
+- **Cosmos DB for NoSQL** accounts with Learning workload and container configuration
 
 ### Technologies Used:
 - **Bicep**: Microsoft's domain-specific language (DSL) for deploying Azure resources
@@ -139,12 +143,20 @@ cloudComputing/
 ├── main.json                     # Compiled ARM template (auto-generated)
 ├── modules/
 │   ├── storageAccount.bicep      # Storage account module
-│   └── blobStorageAccount.bicep  # Blob storage with public access
+│   ├── storageContainer.bicep    # Blob container with public access
+│   ├── functionApp.bicep         # Function App with Consumption plan
+│   ├── cosmosDb.bicep            # Cosmos DB for NoSQL account
+│   └── cosmosDbContainer.bicep   # Cosmos DB container configuration
 ├── parameters/
 │   └── main.parameters.json      # ALL configuration values
 ├── scripts/
 │   ├── createResources.ps1       # DEPLOYMENT script
 │   └── deleteResources.ps1       # CLEANUP script
+├── HandsOnLabs/
+│   ├── Hands-On-PaaS-ToDoApp.pdf # ToDo app requirements document
+│   ├── HandsOn-IaaS-CLI-Creation.pdf
+│   └── HandsOn-PaaS-FinanceContainer-withLinuxVM.pdf
+├── TODO_APP_SETUP_INSTRUCTIONS.md # Complete ToDo app setup guide
 └── README.md                     # This file
 ```
 
@@ -194,8 +206,11 @@ cloudComputing/
    - Logs into Azure (if not already logged in)
    - Registers required Azure providers
    - Creates resource groups in Switzerland North and Poland Central
-   - Creates storage accounts with appropriate configurations
-   - Creates a public blob container in Poland Central
+   - Creates storage accounts with security configurations and blob anonymous access
+   - Creates a public blob container for static content hosting
+   - Deploys Azure Function App with Consumption plan and .NET 8 runtime
+   - Creates Cosmos DB for NoSQL account with Learning workload
+   - Sets up Cosmos DB container with partition key configuration
 
 5. **Monitor the deployment:**
    - The script will show progress messages
@@ -265,12 +280,13 @@ az login
 ## What You Learned
 
 By completing this setup, you learned:
-- Infrastructure as Code (IaC) concepts
-- Azure Resource Manager and Bicep templates
-- Modular template design
-- Parameter management and configuration
-- Azure CLI for resource management
-- PowerShell scripting for automation
+- Infrastructure as Code (IaC) concepts and modular Bicep template design
+- Azure PaaS services: Storage Accounts, Function Apps, and Cosmos DB
+- Serverless application architecture with static web hosting
+- Multi-region Azure deployments and resource organization
+- Parameter management and configuration externalization
+- Azure CLI and PowerShell automation for resource deployment
+- CORS configuration and environment variable management for web applications
 
 ## Project Structure
 
@@ -280,12 +296,20 @@ cloudComputing/
 ├── main.json                     # Auto-generated ARM template
 ├── modules/
 │   ├── storageAccount.bicep      # General storage account module
-│   └── blobStorageAccount.bicep  # Blob storage with anonymous access module
+│   ├── storageContainer.bicep    # Blob container with anonymous access
+│   ├── functionApp.bicep         # Function App with Consumption plan
+│   ├── cosmosDb.bicep            # Cosmos DB for NoSQL account
+│   └── cosmosDbContainer.bicep   # Cosmos DB container configuration
 ├── parameters/
-│   └── main.parameters.json      # Parameter values for deployments
+│   └── main.parameters.json      # ALL configuration values
 ├── scripts/
 │   ├── createResources.ps1       # Deployment script
 │   └── deleteResources.ps1       # Cleanup script
+├── HandsOnLabs/
+│   ├── Hands-On-PaaS-ToDoApp.pdf # ToDo app requirements document
+│   ├── HandsOn-IaaS-CLI-Creation.pdf
+│   └── HandsOn-PaaS-FinanceContainer-withLinuxVM.pdf
+├── TODO_APP_SETUP_INSTRUCTIONS.md # Complete ToDo app setup guide
 └── README.md                     # This documentation
 ```
 
@@ -312,8 +336,11 @@ parameters/main.parameters.json → main.bicep → modules/ → Azure Resources
 
 ### Bicep Files
 - **`main.bicep`** - Main subscription-scoped template that creates the resource groups and orchestrates deployments
-- **`modules/storageAccount.bicep`** - Resource-group-scoped module that creates a general storage account with security settings
-- **`modules/blobStorageAccount.bicep`** - Resource-group-scoped module that creates a blob storage account with anonymous access and a public container
+- **`modules/storageAccount.bicep`** - Resource-group-scoped module that creates a general storage account with security settings and blob anonymous access
+- **`modules/storageContainer.bicep`** - Resource-group-scoped module that creates a blob container with anonymous access for static content
+- **`modules/functionApp.bicep`** - Resource-group-scoped module that creates an Azure Function App with Consumption hosting plan and .NET 8 runtime
+- **`modules/cosmosDb.bicep`** - Resource-group-scoped module that creates a Cosmos DB for NoSQL account with Learning workload configuration
+- **`modules/cosmosDbContainer.bicep`** - Resource-group-scoped module that creates a Cosmos DB container with partition key configuration
 
 ### JSON Files
 You have two JSON files that serve different purposes in the Azure Resource Manager deployment process:

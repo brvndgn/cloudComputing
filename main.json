@@ -5,19 +5,10 @@
     "_generator": {
       "name": "bicep",
       "version": "0.42.1.51946",
-      "templateHash": "18004375913123240697"
+      "templateHash": "17839356436180249265"
     }
   },
   "parameters": {
-    "subscriptionName": {
-      "type": "string"
-    },
-    "subscriptionId": {
-      "type": "string"
-    },
-    "providers": {
-      "type": "array"
-    },
     "rgName": {
       "type": "string"
     },
@@ -56,6 +47,36 @@
     },
     "containerNamePoland": {
       "type": "string"
+    },
+    "functionAppName": {
+      "type": "string"
+    },
+    "runtimeStack": {
+      "type": "string"
+    },
+    "runtimeVersion": {
+      "type": "string"
+    },
+    "hostingPlanSku": {
+      "type": "string"
+    },
+    "cosmosDbAccountName": {
+      "type": "string"
+    },
+    "cosmosDbWorkloadType": {
+      "type": "string"
+    },
+    "cosmosDbDatabaseName": {
+      "type": "string"
+    },
+    "cosmosDbContainerName": {
+      "type": "string"
+    },
+    "cosmosDbPartitionKey": {
+      "type": "string"
+    },
+    "enablePartitionMerge": {
+      "type": "bool"
     }
   },
   "resources": [
@@ -105,7 +126,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.42.1.51946",
-              "templateHash": "12875216803192243715"
+              "templateHash": "6631533995042641499"
             }
           },
           "parameters": {
@@ -137,7 +158,8 @@
               "kind": "[parameters('storageKind')]",
               "properties": {
                 "minimumTlsVersion": "[parameters('storageMinTlsVersion')]",
-                "supportsHttpsTrafficOnly": true
+                "supportsHttpsTrafficOnly": true,
+                "allowBlobPublicAccess": true
               }
             }
           ],
@@ -160,7 +182,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2025-04-01",
-      "name": "blobStorageAccountDeployment",
+      "name": "storageAccountDeployment",
       "resourceGroup": "[parameters('rgNamePoland')]",
       "properties": {
         "expressionEvaluationOptions": {
@@ -182,9 +204,6 @@
           },
           "storageMinTlsVersion": {
             "value": "[parameters('storageMinTlsVersionPoland')]"
-          },
-          "containerName": {
-            "value": "[parameters('containerNamePoland')]"
           }
         },
         "template": {
@@ -194,7 +213,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.42.1.51946",
-              "templateHash": "6828936350661473182"
+              "templateHash": "6631533995042641499"
             }
           },
           "parameters": {
@@ -211,9 +230,6 @@
               "type": "string"
             },
             "storageMinTlsVersion": {
-              "type": "string"
-            },
-            "containerName": {
               "type": "string"
             }
           },
@@ -232,17 +248,6 @@
                 "supportsHttpsTrafficOnly": true,
                 "allowBlobPublicAccess": true
               }
-            },
-            {
-              "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-              "apiVersion": "2023-01-01",
-              "name": "[format('{0}/default/{1}', parameters('storageName'), parameters('containerName'))]",
-              "properties": {
-                "publicAccess": "Container"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageName'))]"
-              ]
             }
           ],
           "outputs": {
@@ -253,7 +258,61 @@
             "storageAccountName": {
               "type": "string",
               "value": "[parameters('storageName')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('rgNamePoland'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "storageContainerDeployment",
+      "resourceGroup": "[parameters('rgNamePoland')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "storageAccountName": {
+            "value": "[parameters('storageNamePoland')]"
+          },
+          "containerName": {
+            "value": "[parameters('containerNamePoland')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.42.1.51946",
+              "templateHash": "10540577245832371673"
+            }
+          },
+          "parameters": {
+            "storageAccountName": {
+              "type": "string"
             },
+            "containerName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+              "apiVersion": "2023-01-01",
+              "name": "[format('{0}/default/{1}', parameters('storageAccountName'), parameters('containerName'))]",
+              "properties": {
+                "publicAccess": "Container"
+              }
+            }
+          ],
+          "outputs": {
             "containerName": {
               "type": "string",
               "value": "[parameters('containerName')]"
@@ -262,6 +321,392 @@
         }
       },
       "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('rgNamePoland'))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'storageAccountDeployment')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "functionAppDeployment",
+      "resourceGroup": "[parameters('rgNamePoland')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "functionAppName": {
+            "value": "[parameters('functionAppName')]"
+          },
+          "location": {
+            "value": "[parameters('locationPoland')]"
+          },
+          "storageAccountName": {
+            "value": "[parameters('storageNamePoland')]"
+          },
+          "storageAccountResourceGroup": {
+            "value": "[parameters('rgNamePoland')]"
+          },
+          "runtimeStack": {
+            "value": "[parameters('runtimeStack')]"
+          },
+          "runtimeVersion": {
+            "value": "[parameters('runtimeVersion')]"
+          },
+          "hostingPlanSku": {
+            "value": "[parameters('hostingPlanSku')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.42.1.51946",
+              "templateHash": "11803969230986682518"
+            }
+          },
+          "parameters": {
+            "functionAppName": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "storageAccountName": {
+              "type": "string"
+            },
+            "storageAccountResourceGroup": {
+              "type": "string"
+            },
+            "runtimeStack": {
+              "type": "string"
+            },
+            "runtimeVersion": {
+              "type": "string"
+            },
+            "hostingPlanSku": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Web/sites",
+              "apiVersion": "2023-01-01",
+              "name": "[parameters('functionAppName')]",
+              "location": "[parameters('location')]",
+              "kind": "functionapp",
+              "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', format('{0}-plan', parameters('functionAppName')))]",
+                "siteConfig": {
+                  "alwaysOn": false,
+                  "http20Enabled": true,
+                  "functionAppScaleLimit": 200,
+                  "minimumElasticInstanceCount": 0,
+                  "ftpsState": "AllAllowed",
+                  "use32BitWorkerProcess": false,
+                  "connectionStrings": [
+                    {
+                      "name": "AzureWebJobsStorage",
+                      "connectionString": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix=core.windows.net', parameters('storageAccountName'), listKeys(resourceId(parameters('storageAccountResourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-01-01').keys[0].value)]",
+                      "type": "Custom"
+                    }
+                  ]
+                },
+                "httpsOnly": false,
+                "clientAffinityEnabled": false
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', format('{0}-plan', parameters('functionAppName')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Web/serverfarms",
+              "apiVersion": "2023-01-01",
+              "name": "[format('{0}-plan', parameters('functionAppName'))]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "[parameters('hostingPlanSku')]",
+                "tier": "Dynamic"
+              },
+              "properties": {
+                "reserved": false
+              }
+            }
+          ],
+          "outputs": {
+            "functionAppName": {
+              "type": "string",
+              "value": "[parameters('functionAppName')]"
+            },
+            "functionAppId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
+            },
+            "defaultHostname": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Web/sites', parameters('functionAppName')), '2023-01-01').defaultHostName]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('rgNamePoland'))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'storageAccountDeployment')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "cosmosDbDeployment",
+      "resourceGroup": "[parameters('rgNamePoland')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "accountName": {
+            "value": "[parameters('cosmosDbAccountName')]"
+          },
+          "location": {
+            "value": "[parameters('locationPoland')]"
+          },
+          "workloadType": {
+            "value": "[parameters('cosmosDbWorkloadType')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.42.1.51946",
+              "templateHash": "18187025710038887774"
+            }
+          },
+          "parameters": {
+            "accountName": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "workloadType": {
+              "type": "string",
+              "defaultValue": "Production"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts",
+              "apiVersion": "2023-11-15",
+              "name": "[parameters('accountName')]",
+              "location": "[parameters('location')]",
+              "kind": "GlobalDocumentDB",
+              "properties": {
+                "databaseAccountOfferType": "Standard",
+                "locations": [
+                  {
+                    "locationName": "[parameters('location')]",
+                    "failoverPriority": 0,
+                    "isZoneRedundant": false
+                  }
+                ],
+                "consistencyPolicy": {
+                  "defaultConsistencyLevel": "Session",
+                  "maxStalenessPrefix": 100,
+                  "maxIntervalInSeconds": 5
+                },
+                "enableAutomaticFailover": false,
+                "enableMultipleWriteLocations": false,
+                "isVirtualNetworkFilterEnabled": false,
+                "disableKeyBasedMetadataWriteAccess": false,
+                "enableFreeTier": "[equals(parameters('workloadType'), 'Learning')]",
+                "enableAnalyticalStorage": false,
+                "enablePartitionMerge": true,
+                "backupPolicy": {
+                  "type": "Periodic",
+                  "periodicModeProperties": {
+                    "backupIntervalInMinutes": 240,
+                    "backupRetentionIntervalInHours": 8,
+                    "backupStorageRedundancy": "Local"
+                  }
+                },
+                "cors": [],
+                "networkAclBypass": "None",
+                "networkAclBypassResourceIds": []
+              }
+            }
+          ],
+          "outputs": {
+            "cosmosDbAccountName": {
+              "type": "string",
+              "value": "[parameters('accountName')]"
+            },
+            "cosmosDbAccountId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('accountName'))]"
+            },
+            "primaryMasterKey": {
+              "type": "string",
+              "value": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('accountName')), '2023-11-15').primaryMasterKey]"
+            },
+            "secondaryMasterKey": {
+              "type": "string",
+              "value": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('accountName')), '2023-11-15').secondaryMasterKey]"
+            },
+            "primaryReadonlyMasterKey": {
+              "type": "string",
+              "value": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('accountName')), '2023-11-15').primaryReadonlyMasterKey]"
+            },
+            "secondaryReadonlyMasterKey": {
+              "type": "string",
+              "value": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('accountName')), '2023-11-15').secondaryReadonlyMasterKey]"
+            },
+            "connectionString": {
+              "type": "string",
+              "value": "[listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('accountName')), '2023-11-15').connectionStrings[0].connectionString]"
+            },
+            "documentEndpoint": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('accountName')), '2023-11-15').documentEndpoint]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('rgNamePoland'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "cosmosDbContainerDeployment",
+      "resourceGroup": "[parameters('rgNamePoland')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "cosmosDbAccountName": {
+            "value": "[parameters('cosmosDbAccountName')]"
+          },
+          "databaseName": {
+            "value": "[parameters('cosmosDbDatabaseName')]"
+          },
+          "containerName": {
+            "value": "[parameters('cosmosDbContainerName')]"
+          },
+          "partitionKeyPath": {
+            "value": "[parameters('cosmosDbPartitionKey')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.42.1.51946",
+              "templateHash": "14257121478511881504"
+            }
+          },
+          "parameters": {
+            "cosmosDbAccountName": {
+              "type": "string"
+            },
+            "databaseName": {
+              "type": "string"
+            },
+            "containerName": {
+              "type": "string"
+            },
+            "partitionKeyPath": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+              "apiVersion": "2023-11-15",
+              "name": "[format('{0}/{1}', parameters('cosmosDbAccountName'), parameters('databaseName'))]",
+              "properties": {
+                "resource": {
+                  "id": "[parameters('databaseName')]"
+                }
+              }
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+              "apiVersion": "2023-11-15",
+              "name": "[format('{0}/{1}/{2}', split(format('{0}/{1}', parameters('cosmosDbAccountName'), parameters('databaseName')), '/')[0], split(format('{0}/{1}', parameters('cosmosDbAccountName'), parameters('databaseName')), '/')[1], parameters('containerName'))]",
+              "properties": {
+                "resource": {
+                  "id": "[parameters('containerName')]",
+                  "partitionKey": {
+                    "paths": [
+                      "[parameters('partitionKeyPath')]"
+                    ],
+                    "kind": "Hash"
+                  },
+                  "indexingPolicy": {
+                    "indexingMode": "consistent",
+                    "includedPaths": [
+                      {
+                        "path": "/*"
+                      }
+                    ],
+                    "excludedPaths": [
+                      {
+                        "path": "/\"_etag\"/?"
+                      }
+                    ]
+                  },
+                  "defaultTtl": -1,
+                  "uniqueKeyPolicy": {
+                    "uniqueKeys": []
+                  }
+                },
+                "options": {
+                  "throughput": 400
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', split(format('{0}/{1}', parameters('cosmosDbAccountName'), parameters('databaseName')), '/')[0], split(format('{0}/{1}', parameters('cosmosDbAccountName'), parameters('databaseName')), '/')[1])]"
+              ]
+            }
+          ],
+          "outputs": {
+            "databaseName": {
+              "type": "string",
+              "value": "[format('{0}/{1}', parameters('cosmosDbAccountName'), parameters('databaseName'))]"
+            },
+            "containerName": {
+              "type": "string",
+              "value": "[parameters('containerName')]"
+            },
+            "databaseId": {
+              "type": "string",
+              "value": "[parameters('databaseName')]"
+            },
+            "containerId": {
+              "type": "string",
+              "value": "[parameters('containerName')]"
+            },
+            "partitionKey": {
+              "type": "string",
+              "value": "[parameters('partitionKeyPath')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'cosmosDbDeployment')]",
         "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('rgNamePoland'))]"
       ]
     }
@@ -275,17 +720,65 @@
       "type": "string",
       "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgName')), 'Microsoft.Resources/deployments', 'storageAccountDeployment'), '2025-04-01').outputs.storageAccountName.value]"
     },
-    "blobStorageAccountId": {
+    "storageAccountPolandId": {
       "type": "string",
-      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'blobStorageAccountDeployment'), '2025-04-01').outputs.storageAccountId.value]"
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'storageAccountDeployment'), '2025-04-01').outputs.storageAccountId.value]"
     },
-    "blobStorageAccountName": {
+    "storageAccountPolandName": {
       "type": "string",
-      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'blobStorageAccountDeployment'), '2025-04-01').outputs.storageAccountName.value]"
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'storageAccountDeployment'), '2025-04-01').outputs.storageAccountName.value]"
     },
     "blobContainerName": {
       "type": "string",
-      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'blobStorageAccountDeployment'), '2025-04-01').outputs.containerName.value]"
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'storageContainerDeployment'), '2025-04-01').outputs.containerName.value]"
+    },
+    "functionAppName": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'functionAppDeployment'), '2025-04-01').outputs.functionAppName.value]"
+    },
+    "functionAppId": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'functionAppDeployment'), '2025-04-01').outputs.functionAppId.value]"
+    },
+    "functionAppHostname": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'functionAppDeployment'), '2025-04-01').outputs.defaultHostname.value]"
+    },
+    "cosmosDbAccountName": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'cosmosDbDeployment'), '2025-04-01').outputs.cosmosDbAccountName.value]"
+    },
+    "cosmosDbAccountId": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'cosmosDbDeployment'), '2025-04-01').outputs.cosmosDbAccountId.value]"
+    },
+    "cosmosDbConnectionString": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'cosmosDbDeployment'), '2025-04-01').outputs.connectionString.value]"
+    },
+    "cosmosDbDocumentEndpoint": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'cosmosDbDeployment'), '2025-04-01').outputs.documentEndpoint.value]"
+    },
+    "cosmosDbDatabaseName": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'cosmosDbContainerDeployment'), '2025-04-01').outputs.databaseName.value]"
+    },
+    "cosmosDbContainerName": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'cosmosDbContainerDeployment'), '2025-04-01').outputs.containerName.value]"
+    },
+    "cosmosDbDatabaseId": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'cosmosDbContainerDeployment'), '2025-04-01').outputs.databaseId.value]"
+    },
+    "cosmosDbContainerId": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'cosmosDbContainerDeployment'), '2025-04-01').outputs.containerId.value]"
+    },
+    "cosmosDbPartitionKey": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgNamePoland')), 'Microsoft.Resources/deployments', 'cosmosDbContainerDeployment'), '2025-04-01').outputs.partitionKey.value]"
     }
   }
 }
