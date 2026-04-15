@@ -1,0 +1,56 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "subscriptionName": {
+            "value": "Azure for Students"
+        },
+        "subscriptionId": {
+            "value": "31b4c445-3541-456c-a8ec-f7c00f279dcb"
+        },
+        "providers": {
+            "value": [
+                "Microsoft.Storage"
+            ]
+        },
+        "rgName": {
+            "value": "RG-BDO-CLI"
+        },
+        "storageName": {
+            "value": "storbdoportal"
+        },
+        "location": {
+            "value": "switzerlandnorth"
+        },
+        "storageSku": {
+            "value": "Standard_LRS"
+        },
+        "storageKind": {
+            "value": "StorageV2"
+        },
+        "storageMinTlsVersion": {
+            "value": "TLS1_2"
+        },
+        "rgNamePoland": {
+            "value": "RG-BDO-Tose1"
+        },
+        "storageNamePoland": {
+            "value": "storbdotose1"
+        },
+        "locationPoland": {
+            "value": "polandcentral"
+        },
+        "storageSkuPoland": {
+            "value": "Standard_LRS"
+        },
+        "storageKindPoland": {
+            "value": "StorageV2"
+        },
+        "storageMinTlsVersionPoland": {
+            "value": "TLS1_2"
+        },
+        "containerNamePoland": {
+            "value": "staticcontent"
+        }
+    }
+}
